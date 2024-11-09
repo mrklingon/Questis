@@ -1,3 +1,29 @@
+function divide () {
+    if (2 <= stack.length) {
+        v1 = stack.pop()
+        v2 = stack.pop()
+    }
+    if (v2 != 0) {
+        Z = Math.round(v1 / v2)
+        stack.push(Z)
+        dispBinary(Z, 0)
+        pause(1000)
+        light.setAll(0x000000)
+        Z = 0
+    }
+}
+function subtract () {
+    if (2 <= stack.length) {
+        v1 = stack.pop()
+        v2 = stack.pop()
+        Z = v1 - v2
+        stack.push(Z)
+        dispBinary(Z, 0)
+        pause(1000)
+        light.setAll(0x000000)
+        Z = 0
+    }
+}
 function zing () {
     light.showAnimation(light.rainbowAnimation, 500)
     for (let index = 0; index <= Math.randomRange(5, 10); index++) {
@@ -6,6 +32,7 @@ function zing () {
     }
     light.setAll(0x000000)
     Z = 0
+    action = 0
     stack = []
 }
 function dispBinary (Value: number, Position: number) {
@@ -54,21 +81,53 @@ input.buttonB.onEvent(ButtonEvent.Click, function () {
         Z += -1
         dispBinary(Z, 0)
     } else {
-        if (2 <= stack.length) {
-            v1 = stack.pop()
-            v2 = stack.pop()
-            Z = v1 - v2
-            stack.push(Z)
-            dispBinary(Z, 0)
-            pause(1000)
-            light.setAll(0x000000)
-            Z = 0
+        if (action == 1) {
+            mult()
+        }
+        if (action == 2) {
+            divide()
+        }
+        if (action == 3) {
+            add()
+        }
+        if (action == 4) {
+            subtract()
         }
     }
 })
+function mult () {
+    if (2 <= stack.length) {
+        v1 = stack.pop()
+        v2 = stack.pop()
+        Z = v1 * v2
+        stack.push(Z)
+        dispBinary(Z, 0)
+        pause(1000)
+        light.setAll(0x000000)
+        Z = 0
+    }
+}
+function add () {
+    if (2 <= stack.length) {
+        v1 = stack.pop()
+        v2 = stack.pop()
+        Z = v1 + v2
+        stack.push(Z)
+        dispBinary(Z, 0)
+        pause(1000)
+    }
+    light.setAll(0x000000)
+    Z = 0
+}
 input.pinA1.onEvent(ButtonEvent.Click, function () {
     dispBinary(stack.length, 0)
     pause(1000)
+    light.setAll(0x000000)
+})
+input.onSwitchMoved(SwitchDirection.Left, function () {
+    light.setAll(0x000000)
+})
+input.onSwitchMoved(SwitchDirection.Right, function () {
     light.setAll(0x000000)
 })
 input.buttonA.onEvent(ButtonEvent.Click, function () {
@@ -76,23 +135,10 @@ input.buttonA.onEvent(ButtonEvent.Click, function () {
         Z += 1
         dispBinary(Z, 0)
     } else {
-        if (2 <= stack.length) {
-            v1 = stack.pop()
-            v2 = stack.pop()
-            Z = v1 + v2
-            stack.push(Z)
-            dispBinary(Z, 0)
-            pause(1000)
-        }
-        light.setAll(0x000000)
-        Z = 0
+        action += 1
+        action = action % 5
+        dispBinary(action, 6)
     }
-})
-input.onSwitchMoved(SwitchDirection.Left, function () {
-    light.setAll(0x000000)
-})
-input.onSwitchMoved(SwitchDirection.Right, function () {
-    light.setAll(0x000000)
 })
 input.pinA2.onEvent(ButtonEvent.Click, function () {
     dispBinary(stack.length, 0)
@@ -102,11 +148,12 @@ input.pinA2.onEvent(ButtonEvent.Click, function () {
     }
     light.setAll(0x000000)
 })
-let v2 = 0
-let v1 = 0
 let Start = 0
 let Scratch = 0
 let P = 0
-let stack: number[] = []
+let action = 0
 let Z = 0
+let v2 = 0
+let v1 = 0
+let stack: number[] = []
 zing()
