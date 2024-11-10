@@ -21,10 +21,13 @@ def showbin(num):
         num = num * -1
     else:
         c = green
-
+        
     if num == 0:
         return
     bits = 1 + int(math.log(num)/math.log(2))
+    if num == 8:
+        cp.pixels[3] = c
+        return
 
     if num != 0:
         for i in range(bits):
@@ -42,6 +45,29 @@ def showbin(num):
         time.sleep(.5)
     else:
         time.sleep(.25)
+
+
+def showbinx(num):
+    cp.pixels.fill(blank)
+    for x in range(3):
+        cp.pixels[x+5] = blue
+        
+    if num < 0:
+        c = red
+        num = num * -1
+    else:
+        c = green
+        
+    if num == 0:
+        return
+    bits = 1 + int(math.log(num)/math.log(2))
+
+    if num != 0:
+        for i in range(bits):
+            if ((2**i)&num)>0:
+                    cp.pixels[5+i]= c
+    time.sleep(.5)
+    
 
 def showdigit(num):
     cp.pixels.fill(blue)
@@ -70,42 +96,47 @@ if cp.switch:
     z = 0
 else:
     state = calc
+    action = 0
     cp.pixels.fill(blank)
-
+    
 while True:
     #switch between enter/calc states
-
+    
     if state == calc and cp.switch:
         state = enter
         z = 0
     if state == enter and not cp.switch:
         state = calc
+        action = 0
     val = 0
-    if cp.button_a:
+    if cp.button_a and not cp.button_b:
         val = val + 1
         time.sleep(.1)
-    if cp.button_b:
+    if cp.button_b  and not cp.button_a:
         val = val + 2
         time.sleep(.1)
-    if cp.touch_A1 and state == enter:
+    if cp.button_a and cp.button_b:
+        val = 3
+        
+    if val == 3 and state == enter:
         print("push "+str(z)+" on stack")
         stack.insert(0,z)
         z = 0
         showbin(z)
         time.sleep(1)
-
+        
     if cp.touch_A1 and state == calc:
         print ("stack is "+str(len(stack))+" elements")
         showbin(len(stack))
         time.sleep(1)
         showbin(0)
-    if cp.touch_A2 and state == calc:
-        print ("stack:")
+    if val==3 and state == calc:
+        print ("stack:") 
         for x in (stack):
             print(str(x))
             showbin(x)
             time.sleep(.25)
-
+        
         showbin(len(stack))
         time.sleep(1)
         showbin(0)
@@ -115,23 +146,46 @@ while True:
                 z = z+1
             if val == 2:
                 z = z-1
-
+ 
             showbin(z)
             if z == 0:
                 time.sleep(.25)
         if state == calc:
-            if val == 1 and len(stack)>1:#add
+            if val == 1:
+                action = (action + 1)%5
+                showbinx(action)
+                
+            if val == 2 and len(stack)>1 and action == 3:#ADD
                 v1 = stack.pop(0)
                 v2 = stack.pop(0)
                 z = v1 + v2
                 print (str(v1)+"+"+str(v2)+"="+str(z))
+
                 stack.insert(0,z)
-                showbin(z)
-            if val == 2 and len(stack)>1:#2
+                showbin(z) 
+                
+            if val == 2 and len(stack)>1 and action == 4:#Subtract
                 v1 = stack.pop(0)
                 v2 = stack.pop(0)
                 z = v1 - v2
                 print (str(v1)+"-"+str(v2)+"="+str(z))
 
                 stack.insert(0,z)
-                showbin(z)
+                showbin(z)              
+                
+            if val == 2 and len(stack)>1 and action == 1:#Multiply
+                v1 = stack.pop(0)
+                v2 = stack.pop(0)
+                z = v1 * v2
+                print (str(v1)+"*"+str(v2)+"="+str(z))
+
+                stack.insert(0,z)
+                showbin(z)              
+            if val == 2 and len(stack)>1 and action == 2:#Divide
+                v1 = stack.pop(0)
+                v2 = stack.pop(0)
+                z = int((v1 / v2))
+                print (str(v1)+"/"+str(v2)+"="+str(z))
+
+                stack.insert(0,z)
+                showbin(z)              
