@@ -93,6 +93,12 @@ input.buttonB.onEvent(ButtonEvent.Click, function () {
         if (action == 4) {
             subtract()
         }
+        if (action == 5) {
+            pop()
+        }
+        if (action == 6) {
+            dupe()
+        }
     }
 })
 function mult () {
@@ -136,10 +142,30 @@ input.buttonA.onEvent(ButtonEvent.Click, function () {
         dispBinary(Z, 0)
     } else {
         action += 1
-        action = action % 5
+        action = action % 7
         dispBinary(action, 6)
     }
 })
+function pop () {
+    if (0 < stack.length) {
+        Z = stack.pop()
+        dispBinary(Z, 0)
+        pause(1000)
+        light.setAll(0x000000)
+        Z = 0
+    }
+}
+function dupe () {
+    if (0 < stack.length) {
+        Z = stack.pop()
+        dispBinary(Z, 0)
+        stack.push(Z)
+        stack.push(Z)
+        pause(1000)
+        light.setAll(0x000000)
+        Z = 0
+    }
+}
 input.pinA2.onEvent(ButtonEvent.Click, function () {
     dispBinary(stack.length, 0)
     for (let value of stack) {
