@@ -2,7 +2,6 @@
 from adafruit_circuitplayground import cp
 import time
 import random
-import math
 
 blank = (0,0,0)
 red = (20,0,0)
@@ -27,7 +26,7 @@ def showbin(num):
 
     if num == 0:
         return
-    bits = 1 + int(math.log(num+1)/math.log(2))
+    bits = 20
     if num != 0:
         for i in range(bits):
             if i>9 and num >2**10:
@@ -51,17 +50,21 @@ def pick():  # create a random color
 
 def rndcolor():
     cp.pixels[random.randrange(10)] = pick()
-
-for i in range(20):
-    rndcolor()
-    time.sleep(.1)
-
-cp.pixels.fill(blank)
+stack = []
+def zing():
+    global stack
+    for i in range(20):
+        rndcolor()
+        time.sleep(.1)
+    for i in range(random.randrange(10)+5):
+        showbin(random.randrange(-1000,1000,1))
+    cp.pixels.fill(blank)
+    stack = []
 
 enter = 1 #enter numbers
 calc  = 2 #act on numbers
 stack = []
-
+zing()
 if cp.switch:
     state = enter
     z = 0
@@ -72,7 +75,8 @@ else:
 
 while True:
     #switch between enter/calc states
-
+    if cp.shake(shake_threshold=10):
+        zing()
     if state == calc and cp.switch:
         state = enter
         z = 0
@@ -162,13 +166,13 @@ while True:
                 stack.insert(0,z)
                 showbin(z)
 
-            if val == 2 and len(stack)>=1 and action == 5:#Dupe
+            if val == 2 and len(stack)>=1 and action == 6:#Dupe
                 v1 = stack.pop(0)
                 print ("dupe:"+str(v1))
                 stack.insert(0,v1)
                 stack.insert(0,v1)
                 showbin(v1)
-            if val == 2 and len(stack)>=1 and action == 6:#Pop
+            if val == 2 and len(stack)>=1 and action == 5:#Pop
                 v1 = stack.pop(0)
                 print ("popped:"+str(v1))
                 showbin(v1)
