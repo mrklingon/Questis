@@ -75,7 +75,7 @@ else:
 
 while True:
     #switch between enter/calc states
-    if cp.shake(shake_threshold=10):
+    if cp.shake(shake_threshold=15):
         zing()
     if state == calc and cp.switch:
         state = enter
